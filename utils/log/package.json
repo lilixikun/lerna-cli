@@ -1,0 +1,33 @@
+{
+  "name": "@aotu-cli/log",
+  "version": "0.0.4",
+  "description": "@aotu-cli/log",
+  "author": "LiLixikun <460373604@qq.com>",
+  "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiLixikun/lerna-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/LiLixikun/lerna-cli/issues"
+  },
+  "dependencies": {
+    "npmlog": "^4.1.2"
+  }
+}

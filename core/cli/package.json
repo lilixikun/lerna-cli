@@ -1,0 +1,41 @@
+{
+  "name": "@aotu-cli/core",
+  "version": "0.0.4",
+  "description": "@aotu-cli/core",
+  "author": "LiLixikun <460373604@qq.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "bin": {
+    "aotu-cli": "bin/yargs.js"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" "
+  },
+  "dependencies": {
+    "@aotu-cli/log": "file:../../utils/log",
+    "@aotu-cli/utils": "file:../../utils/utils",
+    "colors": "^1.4.0",
+    "commander": "^6.2.1",
+    "compare-versions": "^3.6.0",
+    "dotenv": "^8.2.0",
+    "get-npm-info": "file:../../utils/get-npm-info",
+    "import-local": "^3.0.2",
+    "minimist": "^1.2.5",
+    "path-exists": "^4.0.0",
+    "root-check": "^1.0.0",
+    "semver": "^7.3.4",
+    "user-home": "^2.0.0"
+  },
+  "gitHead": "07421c53c941c7bc51e9bd2011d59d5bde1d4675",
+  "publishConfig": {
+    "access": "public"
+  }
+}
