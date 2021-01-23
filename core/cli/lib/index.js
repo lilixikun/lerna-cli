@@ -1,6 +1,5 @@
-// const semver = require('semver')
+const semver = require('semver')
 const path = require('path')
-const compareVersions = require('compare-versions');
 const colors = require('colors/safe')
 const log = require('@aotu-cli/log')
 const userHome = require('user-home');
@@ -10,7 +9,8 @@ const pkg = require('../package.json')
 const constant = require('./constant')
 
 let args
-
+// console.log(semver.gte("10.14.2", "8.0"));
+console.log(semver.gt('10.2.3', '9.0.0'));
 /**
  * tip
  *  require 默认可以加载 .js/.json/.node
@@ -21,7 +21,7 @@ let args
 
 module.exports = core;
 
-function core() {
+async function core() {
     try {
         checkPkgVersion()
         checkNodeVersion()
@@ -29,7 +29,7 @@ function core() {
         checkUserHome()
         checkInputArgs()
         checkEnv()
-        checkGlobalUpdate()
+     await checkGlobalUpdate()
     } catch (error) {
         log.error(error.message)
     }
@@ -51,7 +51,7 @@ function checkNodeVersion() {
     const currentVersion = process.version;
     const lowestVersion = constant.LOWEST_NODE_VERSION;
     // 比对最低版本号
-    if (compareVersions(currentVersion, lowestVersion) === -1) {
+    if (!semver.gte(currentVersion, lowestVersion)) {
         throw new Error(colors.red(`aotu-cli 需要安装 v${lowestVersion} 以上版本的 Node.js`))
     }
 }
@@ -130,9 +130,8 @@ async function checkGlobalUpdate() {
     const { getNpmSemverVersion } = require('get-npm-info');
     // 提取所有版本号，对比那些版本号大于当前版本号
     const lastVersion = await getNpmSemverVersion(currentVersion, npmName);
-    console.log(lastVersion);
     // 获取最新版本号，提示用户更新到该版本
-    if (lastVersion && lastVersion >= currentVersion) {
+    if (lastVersion && semver.gt(lastVersion, currentVersion)) {
         log.warn(colors.yellow(`请手动更新 ${npmName}，当前版本：${lastVersion}，最新版本 ${lastVersion}
                   更新命令：npm install -g ${npmName}`))
     }

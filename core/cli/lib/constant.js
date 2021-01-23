@@ -1,4 +1,4 @@
-const LOWEST_NODE_VERSION = "v8.0";
+const LOWEST_NODE_VERSION = "8.0.0";
 const DEFAULT_CLI_HOME = '.aotu-cli';
 
 module.exports = {
