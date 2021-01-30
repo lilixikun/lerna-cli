@@ -1,8 +1,7 @@
 'use strict';
 
-module.exports = utils;
-
-function utils() {
-    // TODO
-    console.log('hello @aotu-cli/utils,ddd');
+function isObject(o) {
+    return Object.prototype.toString.call(o) === "[object Object]"
 }
+
+module.exports = { isObject };

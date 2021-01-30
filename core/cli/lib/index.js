@@ -3,14 +3,14 @@ const path = require('path')
 const colors = require('colors/safe')
 const log = require('@aotu-cli/log')
 const userHome = require('user-home');
+const commander = require('commander');
+const exec = require('@aotu-cli/exec')
 const pathExists = require('path-exists').sync
 
 const pkg = require('../package.json')
 const constant = require('./constant')
 
-let args
-// console.log(semver.gte("10.14.2", "8.0"));
-console.log(semver.gt('10.2.3', '9.0.0'));
+const program = new commander.Command();
 /**
  * tip
  *  require 默认可以加载 .js/.json/.node
@@ -23,15 +23,13 @@ module.exports = core;
 
 async function core() {
     try {
-        checkPkgVersion()
-        checkNodeVersion()
-        checkRoot()
-        checkUserHome()
-        checkInputArgs()
-        checkEnv()
-     await checkGlobalUpdate()
+        await prepare()
+        registerCommand()
     } catch (error) {
         log.error(error.message)
+        if (program.debug) {
+            console.log(error);
+        }
     }
 }
 
@@ -44,26 +42,11 @@ function checkPkgVersion() {
 }
 
 /**
- * 检查Node版本
- */
-function checkNodeVersion() {
-    // 获取当前Node版本
-    const currentVersion = process.version;
-    const lowestVersion = constant.LOWEST_NODE_VERSION;
-    // 比对最低版本号
-    if (!semver.gte(currentVersion, lowestVersion)) {
-        throw new Error(colors.red(`aotu-cli 需要安装 v${lowestVersion} 以上版本的 Node.js`))
-    }
-}
-
-/**
  * 检查 root 启动
  */
 function checkRoot() {
     // root 启动的目录无法操作，需要进行降级
-    console.log(process.geteuid());
     // sudo 启动 打印就是 0  正常就是 501
-
     const rootCheck = require('root-check')
     rootCheck()
 }
@@ -75,23 +58,6 @@ function checkUserHome() {
     if (!userHome || !pathExists(userHome)) {
         throw new Error(colors.red('当前用户主目录不存在，请检查!'))
     }
-}
-
-/**
- * 检查入参
- */
-function checkInputArgs() {
-    args = require('minimist')(process.argv.slice(2))
-    checkArgs()
-}
-
-function checkArgs() {
-    if (args.debug) {
-        process.env.LOG_LEVEL = 'verbose'
-    } else {
-        process.env.LOG_LEVEL = 'info'
-    }
-    log.level = process.env.LOG_LEVEL;
 }
 
 /**
@@ -136,3 +102,55 @@ async function checkGlobalUpdate() {
                   更新命令：npm install -g ${npmName}`))
     }
 }
+
+async function prepare() {
+    checkPkgVersion()
+    checkRoot()
+    checkUserHome()
+    checkEnv()
+    await checkGlobalUpdate()
+}
+
+function registerCommand() {
+    program
+        .name(Object.keys(pkg.bin)[0])
+        .usage('<command> [options]')
+        .version(pkg.version)
+        .option('-d, --debug', '是否开启调试模式', false)
+        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件', '');
+
+    program
+        .command('init [projectName]')
+        .option('-f, --force', '是否强制初始化项目')
+        .action(exec)
+
+    // 开启debug模式
+    program.on('option:debug', function () {
+        if (program.debug) {
+            process.env.LOG_LEVEL = 'verbose';
+        } else {
+            process.env.LOG_LEVEL = 'info';
+        }
+        log.level = process.env.LOG_LEVEL;
+    });
+
+    // 指定targetPath 利用环境变量进行业务解耦
+    program.on('option:targetPath', function () {
+        process.env.CLI_TARGET_PATH = program.targetPath;
+    })
+
+    // 对未知命令的监听
+    program.on('command:*', function (obj) {
+        console.log(colors.red('未知的命令：' + obj[0]));
+        const availableCommands = program.commands.map(cmd => cmd.name())
+        if (availableCommands.length > 0) {
+            console.log(colors.green('可用命令：' + availableCommands.join(',')));
+        }
+    })
+    program.parse(program.args);
+    // 对用户没有输入命令时候的处理
+    if (program.args && program.args.length < 1) {
+        program.outputHelp();
+        console.log();
+    }
+}   

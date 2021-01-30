@@ -2,6 +2,7 @@
 
 const urljoin = require('url-join');
 const axios = require('axios');
+const semver = require('semver')
 
 function getNpmInfo(npmName, registry) {
     if (!npmName) {
@@ -46,7 +47,17 @@ async function getNpmSemverVersion(baseVersion, npmName, registry) {
     }
 }
 
+async function getNpmLatestVersion(npmName, registry) {
+    const versions = await getNpmVersion(npmName, registry);
+    if (versions) {
+        return versions.sort((a, b) => semver.gt(b, a))[0];
+    }
+    return null
+}
+
 module.exports = {
     getNpmVersion,
-    getNpmSemverVersion
+    getNpmSemverVersion,
+    getDefaultRegistry,
+    getNpmLatestVersion
 };

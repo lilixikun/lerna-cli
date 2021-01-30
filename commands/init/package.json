@@ -1,7 +1,7 @@
 {
-  "name": "@aotu-cli/get-npm-info",
-  "version": "0.0.4",
-  "description": "@aotu-cli/get-npm-info",
+  "name": "@aotu-cli/init",
+  "version": "1.0.0",
+  "description": "> TODO: description",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
   "license": "ISC",
@@ -14,8 +14,7 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "http://registry.npmjs.org/",
-    "access": "public"
+    "registry": "https://registry.npm.taobao.org"
   },
   "repository": {
     "type": "git",
@@ -28,7 +27,7 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "url-join": "^4.0.1"
+    "@aotu-cli/command": "file:../../models/command",
+    "@aotu-cli/log": "file:../../utils/log"
   }
 }
