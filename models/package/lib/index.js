@@ -32,6 +32,7 @@ class Package {
     async prepare() {
         // 创建缓存目录
         if (this.storeDir && !pathExists(this.storeDir)) {
+            console.log(this.storeDir);
             fse.mkdirSync(this.storeDir);
         }
         if (this.packageVersion === 'latest') {

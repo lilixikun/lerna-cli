@@ -28,6 +28,13 @@
   },
   "dependencies": {
     "@aotu-cli/command": "file:../../models/command",
-    "@aotu-cli/log": "file:../../utils/log"
+    "@aotu-cli/log": "file:../../utils/log",
+    "@aotu-cli/request": "file:../../utils/request",
+    "@aotu-cli/package": "file:../../models/package",
+    "@aotu-cli/utils": "file:../../utils/utils",
+    "fs-extra": "^9.1.0",
+    "inquirer": "^7.3.3",
+    "semver": "^7.3.4",
+    "user-home": "^2.0.0"
   }
 }

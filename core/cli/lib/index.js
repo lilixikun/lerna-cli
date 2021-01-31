@@ -93,7 +93,7 @@ async function checkGlobalUpdate() {
     const currentVersion = pkg.version;
     const npmName = pkg.name;
     // 调用 API 拿到所有版本号
-    const { getNpmSemverVersion } = require('get-npm-info');
+    const { getNpmSemverVersion } = require('@aotu-cli/get-npm-info');
     // 提取所有版本号，对比那些版本号大于当前版本号
     const lastVersion = await getNpmSemverVersion(currentVersion, npmName);
     // 获取最新版本号，提示用户更新到该版本
