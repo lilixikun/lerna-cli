@@ -11,7 +11,7 @@ const Package = require('@aotu-cli/package');
 const Command = require('@aotu-cli/command');
 const log = require('@aotu-cli/log');
 const request = require('@aotu-cli/request')
-const { spinnerStart, oraSpinner } = require('@aotu-cli/utils')
+const { spinnerStart, oraSpinner, sleep } = require('@aotu-cli/utils')
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
 
@@ -55,7 +55,7 @@ class InitCommand extends Command {
             const ora = oraSpinner('正在下载模板...');
             await sleep();
             try {
-                // await pkg.install();
+                await pkg.install();
                 ora.succeed('下载模版成功!')
             } catch (e) {
                 throw e
@@ -63,11 +63,11 @@ class InitCommand extends Command {
                 ora.stop();
             }
         } else {
-            const ora = oraSpinner('正在下载模板...');
+            const ora = oraSpinner('正在更新模板...');
             await sleep();
             try {
-                await templateNpm.update();
-                ora.success('更新模板成功');
+                await pkg.update();
+                ora.succeed('更新模板成功');
             } catch (e) {
                 throw e;
             } finally {

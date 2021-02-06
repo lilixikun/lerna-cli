@@ -8,7 +8,6 @@ const pkgDir = require('pkg-dir').sync;
 const formatPath = require('@aotu-cli/format-path');
 const { isObject } = require('@aotu-cli/utils')
 const { getDefaultRegistry, getNpmLatestVersion } = require('@aotu-cli/get-npm-info')
-
 class Package {
     constructor(options) {
         if (!options) {
@@ -32,8 +31,7 @@ class Package {
     async prepare() {
         // 创建缓存目录
         if (this.storeDir && !pathExists(this.storeDir)) {
-            console.log(this.storeDir);
-            fse.mkdirSync(this.storeDir);
+            fse.mkdirpSync(this.storeDir);
         }
         if (this.packageVersion === 'latest') {
             this.packageVersion = await getNpmLatestVersion(this.packageName)
@@ -118,7 +116,6 @@ class Package {
             return _getRootFile(this.targetPath)
         }
     }
-
 }
 
 module.exports = Package;
