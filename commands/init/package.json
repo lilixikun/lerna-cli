@@ -29,11 +29,14 @@
   "dependencies": {
     "@aotu-cli/command": "file:../../models/command",
     "@aotu-cli/log": "file:../../utils/log",
-    "@aotu-cli/request": "file:../../utils/request",
     "@aotu-cli/package": "file:../../models/package",
+    "@aotu-cli/request": "file:../../utils/request",
     "@aotu-cli/utils": "file:../../utils/utils",
+    "ejs": "^3.1.6",
     "fs-extra": "^9.1.0",
+    "glob": "^7.1.6",
     "inquirer": "^7.3.3",
+    "kebab-case": "^1.0.0",
     "semver": "^7.3.4",
     "user-home": "^2.0.0"
   }

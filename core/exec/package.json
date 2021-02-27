@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@aotu-cli/package": "file:../../models/package",
-    "@aotu-cli/log": "file:../../utils/log"
+    "@aotu-cli/log": "file:../../utils/log",
+    "@aotu-cli/utils": "file:../../utils/utils"
   }
 }

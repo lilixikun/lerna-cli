@@ -6,15 +6,21 @@ const fse = require('fs-extra');
 const inquirer = require('inquirer');
 const semver = require('semver');
 const userHome = require('user-home')
+const glob = require('glob')
+const ejs = require('ejs')
 
 const Package = require('@aotu-cli/package');
 const Command = require('@aotu-cli/command');
 const log = require('@aotu-cli/log');
 const request = require('@aotu-cli/request')
-const { spinnerStart, oraSpinner, sleep } = require('@aotu-cli/utils')
+const { spinnerStart, oraSpinner, sleep, execAsync } = require('@aotu-cli/utils');
+
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
 
+const TEMPLATE_TYPE_NORMAL = 'normal';
+const TEMPLATE_TYPE_CUSTOM = 'custom';
+const WHITE_COMMAND = ['npm', 'cnpm', 'yarn'];
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || '';
@@ -33,9 +39,13 @@ class InitCommand extends Command {
                 // 2. 下载模版
                 await this.downloadTemplate()
                 // 3. 安装模版
+                await this.installTemplate()
             }
         } catch (e) {
             log.error(e.message);
+            if (process.env.LOG_LEVEL === 'verbose') {
+                console.log(e);
+            }
         }
     }
 
@@ -45,6 +55,7 @@ class InitCommand extends Command {
         const targetPath = path.resolve(userHome, '.aotu-cli', 'template');
         const storeDir = path.resolve(userHome, '.aotu-cli', 'template', 'node_modules');
         const { npmName, version } = templateInfo;
+        this.templateInfo = templateInfo;
         const pkg = new Package({
             targetPath,
             storeDir,
@@ -56,22 +67,26 @@ class InitCommand extends Command {
             await sleep();
             try {
                 await pkg.install();
-                ora.succeed('下载模版成功!')
             } catch (e) {
                 throw e
             } finally {
-                ora.stop();
+                if (await pkg.exists()) {
+                    ora.succeed('下载模版成功!');
+                    this.pkg = pkg;
+                }
             }
         } else {
             const ora = oraSpinner('正在更新模板...');
             await sleep();
             try {
                 await pkg.update();
-                ora.succeed('更新模板成功');
             } catch (e) {
                 throw e;
             } finally {
-                ora.stop();
+                if (await pkg.exists()) {
+                    ora.succeed('更新模板成功');
+                    this.pkg = pkg;
+                }
             }
         }
     }
@@ -195,7 +210,128 @@ class InitCommand extends Command {
         } else if (type === TYPE_COMPONENT) {
 
         }
+        // 生成classname abcAcc -> abc-acc
+        if (projectInfo.projectName) {
+            projectInfo.name = projectInfo.projectName;
+            projectInfo.className = require('kebab-case')(projectInfo.projectName).replace(/^-/, '');
+        }
+        // 和模版的 ejs 名字对应上
+        if (projectInfo.projectVersion) {
+            projectInfo.version = projectInfo.projectVersion
+        }
+        if (projectInfo.componentDescription) {
+            projectInfo.description = projectInfo.componentDescription;
+        }
         return projectInfo;
+    }
+
+    async installTemplate() {
+        if (this.templateInfo) {
+            if (!this.templateInfo.type) {
+                this.templateInfo.type = TEMPLATE_TYPE_NORMAL
+            }
+            const { type } = this.templateInfo;
+            if (type === TEMPLATE_TYPE_NORMAL) {
+                // 标准安装
+                await this.installNormalTemplate();
+            } else if (type === TEMPLATE_TYPE_CUSTOM) {
+                // 自定义安装
+                await this.installCustomTemplate();
+            } else {
+                throw new Error('无法识别项目模板类型！');
+            }
+        } else {
+            throw new Error('项目模板信息不存在！');
+        }
+
+    }
+
+    // 白名单检测
+    checkCommand(cmd) {
+        if (WHITE_COMMAND.includes(cmd)) {
+            return cmd;
+        }
+        return null;
+    }
+
+    async execCommand(command, errMsg) {
+        let ret;
+        if (command) {
+            const cmdArray = command.split(' ');
+            const cmd = this.checkCommand(cmdArray[0]);
+            if (!cmd) {
+                throw new Error('命令不存在！命令：' + command);
+            }
+            const args = cmdArray.slice(1);
+            ret = await execAsync(cmd, args, {
+                stdio: 'inherit',
+                cwd: process.cwd(),
+            })
+        }
+        if (ret !== 0) {
+            throw new Error(errMsg);
+        }
+        return ret;
+    }
+
+    async ejsRender(options) {
+        const dir = process.cwd();
+        const projectInfo = this.projectInfo;
+        console.log(projectInfo);
+        return new Promise((resolve, reject) => {
+            glob("**", {
+                dir: dir,
+                ignore: options.ignore || '',
+                nodir: true
+            }, function (err, files) {
+                if (err) {
+                    reject(err)
+                }
+                Promise.all(files.map((file) => {
+                    const filePath = path.join(dir, file);
+                    return new Promise((resolve1, reject1) => {
+                        ejs.renderFile(filePath, projectInfo, {}, (err, result) => {
+                            if (err) {
+                                reject1(err)
+                            } else {
+                                fse.writeFileSync(filePath, result);
+                                resolve1(result)
+                            }
+                        })
+                    })
+                }))
+            })
+        })
+    }
+
+    async installNormalTemplate() {
+        const ora = oraSpinner('正在安装模板...');
+        await sleep();
+        try {
+            // 拷贝模板代码至当前目录  模版得放在 template 下面才能进行 ejs 渲染
+            const templatePath = path.resolve(this.pkg.cacheFilePath, 'template');
+            const targetPath = process.cwd();
+            fse.ensureDirSync(templatePath);
+            fse.ensureDirSync(targetPath);
+            fse.copySync(templatePath, targetPath);
+            log.verbose(`从${templatePath}拷贝到${targetPath}`);
+        } catch (e) {
+            throw e;
+        } finally {
+            ora.succeed('模版安装成功!')
+        }
+        const templateIgnore = this.templateInfo.ignore || [];
+        const ignore = ['**/node_modules/**', ...templateIgnore, 'public/**'];
+        await this.ejsRender({ ignore });
+        const { installCommand, startCommand } = this.templateInfo;
+        // 安装依赖
+        // await this.execCommand(installCommand, '依赖安装失败！');
+        // 启动命令执行
+        // await this.execCommand(startCommand, '启动执行命令失败！');
+    }
+
+    async installCustomTemplate() {
+        console.log('自定义安装');
     }
 
     isDirEmpty(localPath) {
