@@ -2,7 +2,7 @@
   "packages": [
     "core/*",
     "commands/*",
-    "modeles/*",
+    "models/*",
     "utils/*"
   ],
   "version": "0.0.4"
