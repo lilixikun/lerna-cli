@@ -1,6 +1,6 @@
 {
   "name": "@aotu-cli/exec",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "aotu-cli execute package",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
@@ -27,8 +27,8 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/package": "file:../../models/package",
     "@aotu-cli/log": "file:../../utils/log",
+    "@aotu-cli/package": "file:../../models/package",
     "@aotu-cli/utils": "file:../../utils/utils"
   }
 }

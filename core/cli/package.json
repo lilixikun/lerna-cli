@@ -1,6 +1,6 @@
 {
   "name": "@aotu-cli/core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "@aotu-cli/core",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "",
@@ -20,8 +20,8 @@
     "test": "echo \"Error: run tests from root\" "
   },
   "dependencies": {
-    "@aotu-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@aotu-cli/exec": "file:../exec",
+    "@aotu-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@aotu-cli/log": "file:../../utils/log",
     "@aotu-cli/utils": "file:../../utils/utils",
     "colors": "^1.4.0",
