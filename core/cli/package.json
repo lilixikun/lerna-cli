@@ -20,10 +20,10 @@
     "test": "echo \"Error: run tests from root\" "
   },
   "dependencies": {
-    "@aotu-cli/exec": "file:../exec",
-    "@aotu-cli/get-npm-info": "file:../../utils/get-npm-info",
-    "@aotu-cli/log": "file:../../utils/log",
-    "@aotu-cli/utils": "file:../../utils/utils",
+    "@aotu-cli/exec": "^0.0.5",
+    "@aotu-cli/get-npm-info": "^0.0.5",
+    "@aotu-cli/log": "^0.0.5",
+    "@aotu-cli/utils": "^0.0.5",
     "colors": "^1.4.0",
     "commander": "^6.2.1",
     "dotenv": "^8.2.0",
@@ -33,7 +33,7 @@
     "semver": "^7.3.4",
     "user-home": "^2.0.0"
   },
-  "gitHead": "07421c53c941c7bc51e9bd2011d59d5bde1d4675",
+  "gitHead": "a5a4cc29e1c5bcee797730f4136b715b6e0c9af4",
   "publishConfig": {
     "access": "public"
   }

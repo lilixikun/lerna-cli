@@ -27,8 +27,9 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/log": "file:../../utils/log",
+    "@aotu-cli/log": "^0.0.5",
     "colors": "^1.4.0",
     "semver": "^7.3.4"
-  }
+  },
+  "gitHead": "a5a4cc29e1c5bcee797730f4136b715b6e0c9af4"
 }

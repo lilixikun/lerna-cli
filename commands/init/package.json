@@ -27,11 +27,11 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/command": "file:../../models/command",
-    "@aotu-cli/log": "file:../../utils/log",
-    "@aotu-cli/package": "file:../../models/package",
-    "@aotu-cli/request": "file:../../utils/request",
-    "@aotu-cli/utils": "file:../../utils/utils",
+    "@aotu-cli/command": "^0.0.5",
+    "@aotu-cli/log": "^0.0.5",
+    "@aotu-cli/package": "^0.0.5",
+    "@aotu-cli/request": "^0.0.5",
+    "@aotu-cli/utils": "^0.0.5",
     "ejs": "^3.1.6",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",
@@ -39,5 +39,6 @@
     "kebab-case": "^1.0.0",
     "semver": "^7.3.4",
     "user-home": "^2.0.0"
-  }
+  },
+  "gitHead": "a5a4cc29e1c5bcee797730f4136b715b6e0c9af4"
 }

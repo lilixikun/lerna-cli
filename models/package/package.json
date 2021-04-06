@@ -27,11 +27,12 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/format-path": "file:../../utils/format-path",
-    "@aotu-cli/get-npm-info": "file:../../utils/get-npm-info",
-    "@aotu-cli/utils": "file:../../utils/utils",
+    "@aotu-cli/format-path": "^0.0.5",
+    "@aotu-cli/get-npm-info": "^0.0.5",
+    "@aotu-cli/utils": "^0.0.5",
     "fs-extra": "^9.1.0",
     "npminstall": "^4.10.0",
     "pkg-dir": "^5.0.0"
-  }
+  },
+  "gitHead": "a5a4cc29e1c5bcee797730f4136b715b6e0c9af4"
 }
