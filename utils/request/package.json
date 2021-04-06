@@ -1,8 +1,8 @@
 {
   "name": "@aotu-cli/request",
-  "version": "0.0.8",
+  "version": "0.0.7",
   "description": "@aotu-cli/request",
-  "author": "席坤 <xikun@shizhuang-inc.com>",
+  "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
   "license": "ISC",
   "main": "lib/index.js",
