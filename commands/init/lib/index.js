@@ -402,12 +402,9 @@ class InitCommand extends Command {
   }
 
   async installCustomTemplate() {
-    console.log("自定义安装");
     // 查询自定义模板的入口文件
-    console.log(this.pkg);
     if (await this.pkg.exists()) {
       const rootFile = this.pkg.getRootFilePath();
-      console.log(rootFile);
       if (fs.existsSync(rootFile)) {
         log.notice("开始执行自定义模板");
         const templatePath = path.resolve(this.pkg.cacheFilePath, "template");
