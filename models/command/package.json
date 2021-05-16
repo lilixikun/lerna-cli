@@ -1,6 +1,6 @@
 {
   "name": "@aotu-cli/command",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "@aotu-cli/command",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
@@ -28,7 +28,7 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/log": "^0.0.10",
+    "@aotu-cli/log": "^0.1.0",
     "colors": "^1.4.0",
     "semver": "^7.3.4"
   },
