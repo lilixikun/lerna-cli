@@ -341,7 +341,6 @@ class InitCommand extends Command {
   async ejsRender(options) {
     const dir = process.cwd();
     const projectInfo = this.projectInfo;
-    console.log(projectInfo);
     return new Promise((resolve, reject) => {
       glob(
         "**",
@@ -368,7 +367,9 @@ class InitCommand extends Command {
                 });
               });
             })
-          );
+          ).then(()=>{
+            resolve()
+          });
         }
       );
     });

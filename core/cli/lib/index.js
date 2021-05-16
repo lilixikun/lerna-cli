@@ -6,6 +6,9 @@ const userHome = require("user-home");
 const commander = require("commander");
 const exec = require("@aotu-cli/exec");
 const pathExists = require("path-exists").sync;
+const figlet = require("figlet");
+const dewuStr = figlet.textSync("   De Wu");
+const Printer = require("@darkobits/lolcatjs");
 
 const pkg = require("../package.json");
 const constant = require("./constant");
@@ -137,12 +140,19 @@ function registerCommand() {
     log.level = process.env.LOG_LEVEL;
   });
 
-  program.helpInformation = function () {
-    return "dewu脚手架";
-  };
-  // program.on("--help", function () {
-  //   console.log("your help");
-  // });
+  // program.helpInformation = function () {
+  //   return Printer.default.fromString(
+  //     `   \n      欢迎使用前端平台脚手架 ${pkg.version}\n    https://poizon.feishu.cn/wiki/wikcn3APD6AnJ9acreDrHhPuvKg\n   ${dewuStr}`
+  //   );
+  // };
+
+  program.on("--help", function () {
+    console.log(
+      Printer.default.fromString(
+        `   \n      欢迎使用前端平台脚手架 ${pkg.version}\n    https://poizon.feishu.cn/wiki/wikcn3APD6AnJ9acreDrHhPuvKg\n   ${dewuStr}`
+      )
+    );
+  });
 
   // 指定targetPath 利用环境变量进行业务解耦
   program.on("option:targetPath", function () {

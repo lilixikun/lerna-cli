@@ -6,7 +6,7 @@ const log = require("@aotu-cli/log");
 const { exec: spawn } = require("@aotu-cli/utils");
 
 const SETTINGS = {
-  init: "@imooc-cli/init",
+  init: "@aotu-cli/init",
 };
 
 const CACHE_DIR = "dependencies";
