@@ -1,6 +1,6 @@
 {
   "name": "@aotu-cli/get-npm-info",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "@aotu-cli/get-npm-info",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",

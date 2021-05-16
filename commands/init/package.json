@@ -1,6 +1,6 @@
 {
   "name": "@aotu-cli/init",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "> TODO: description",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
@@ -28,11 +28,11 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/command": "^0.1.0",
-    "@aotu-cli/log": "^0.1.0",
-    "@aotu-cli/package": "^0.1.0",
+    "@aotu-cli/command": "^0.2.0",
+    "@aotu-cli/log": "^0.2.0",
+    "@aotu-cli/package": "^0.2.0",
     "@aotu-cli/request": "../../utils/request",
-    "@aotu-cli/utils": "^0.1.0",
+    "@aotu-cli/utils": "^0.2.0",
     "ejs": "^3.1.6",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",

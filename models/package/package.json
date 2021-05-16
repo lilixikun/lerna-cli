@@ -1,6 +1,6 @@
 {
   "name": "@aotu-cli/package",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "@aotu-cli/package",
   "author": "LiLixikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
@@ -28,9 +28,9 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/format-path": "^0.1.0",
-    "@aotu-cli/get-npm-info": "^0.1.0",
-    "@aotu-cli/utils": "^0.1.0",
+    "@aotu-cli/format-path": "^0.2.0",
+    "@aotu-cli/get-npm-info": "^0.2.0",
+    "@aotu-cli/utils": "^0.2.0",
     "fs-extra": "^9.1.0",
     "npminstall": "^4.10.0",
     "pkg-dir": "^5.0.0"
