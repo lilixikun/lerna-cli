@@ -14,13 +14,6 @@ const pkg = require("../package.json");
 const constant = require("./constant");
 
 const program = new commander.Command();
-/**
- * tip
- *  require 默认可以加载 .js/.json/.node
- *  .js -> module.export/exports
- *  .json -> JSON.parse
- * 如果不是 这三种结尾的 node 默认会当作 .js 来执行  如 .txt 里面写入代码 也是正常读取
- */
 
 module.exports = core;
 
@@ -128,6 +121,8 @@ function registerCommand() {
     .option("-f, --force", "是否强制初始化项目")
     .action(exec);
 
+  program.command("publish").action(exec);
+
   program.command("clear [type]").action(exec);
 
   // 开启debug模式
@@ -139,12 +134,6 @@ function registerCommand() {
     }
     log.level = process.env.LOG_LEVEL;
   });
-
-  // program.helpInformation = function () {
-  //   return Printer.default.fromString(
-  //     `   \n      欢迎使用前端平台脚手架 ${pkg.version}\n    https://poizon.feishu.cn/wiki/wikcn3APD6AnJ9acreDrHhPuvKg\n   ${dewuStr}`
-  //   );
-  // };
 
   program.on("--help", function () {
     console.log(
