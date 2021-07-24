@@ -121,7 +121,10 @@ function registerCommand() {
     .option("-f, --force", "是否强制初始化项目")
     .action(exec);
 
-  program.command("publish").action(exec);
+  program
+    .command("publish")
+    .option("--refreshServer", "强制更新远程Git仓库")
+    .action(exec);
 
   program.command("clear [type]").action(exec);
 
