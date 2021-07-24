@@ -7,6 +7,7 @@ const { exec: spawn } = require("@aotu-cli/utils");
 
 const SETTINGS = {
   init: "@aotu-cli/init",
+  publish: "@aotu-cli/publish"
 };
 
 const CACHE_DIR = "dependencies";
