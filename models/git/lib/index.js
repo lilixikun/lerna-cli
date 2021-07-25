@@ -7,7 +7,7 @@ const simpleGit = require('simple-git');
 const terminalLink = require('terminal-link')
 const fse = require("fs-extra")
 const log = require("@aotu-cli/log")
-const { readFile, writeFile } = require("@aotu-cli/utils")
+const { readFile, writeFile, oraSpinner } = require("@aotu-cli/utils")
 const GitHub = require("./Github")
 const Gitee = require('./Gitee')
 
@@ -54,6 +54,7 @@ class Git {
         this.user = null; // 用户信息
         this.orgs = null; // 用户所属组织
         this.owner = null; // 远程仓库类型
+        this.repo = null; // git 仓库
         this.login = null; // 远程仓库登录名
         this.refreshServer = refreshServer; // 是否强制刷新远程Git类型
         this.refreshToken = refreshToken; // 是否强制刷新远程Gittoken
@@ -72,6 +73,8 @@ class Git {
         await this.getUserAndOrgs()
         // 检查远程仓库类型
         await this.checkGitOwner()
+        // 检测并创建远程仓库
+        await this.checkRepo()
     }
 
     checkHomePath() {
@@ -183,6 +186,29 @@ class Git {
         }
         this.owner = owner;
         this.login = login;
+    }
+
+    async checkRepo() {
+        let repo = await this.gitServer.getRepo(this.login, this.name);
+        if (!repo) {
+            const ora = oraSpinner("开始创建远程仓库...");
+            try {
+                if (this.owner === REPO_OWNER_USER) {
+                    repo = await this.gitServer.createRepo(this.name);
+                } else {
+                    repo = await this.gitServer.createOrgRepo(this.name, this.login);
+                }
+            } finally {
+                ora.stop();
+            }
+            if (repo) {
+                log.success('远程仓库创建成功');
+            } else {
+                throw new Error('远程仓库创建失败');
+            }
+        }
+        log.success('远程仓库信息获取成功');
+        this.repo = repo;
     }
 
     createGitServer(gitServer) {
