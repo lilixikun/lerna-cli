@@ -26,9 +26,11 @@ class Gitee extends GitServer {
         return this.request.get(`/users/${username}/orgs`)
     }
 
-    getSSHKeyUrl() { }
-    getTokenHelperUrl() {
-        return "https://sindresorhus.com"
+    getSSHKeyUrl() {
+        return "https://gitee.com/profile/sshkeys";
+    }
+    getTokenUrl() {
+        return "https://gitee.com/personal_access_tokens"
     }
 }
 module.exports = Gitee

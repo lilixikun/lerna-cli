@@ -14,7 +14,7 @@ class GitServer {
     getOrg() { }
 
     getSSHKeyUrl() { }
-    getTokenHelperUrl() {
+    getTokenUrl() {
         return "https://sindresorhus.com"
     }
 }
