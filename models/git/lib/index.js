@@ -4,6 +4,7 @@ const fs = require("fs")
 const userhome = require("userhome")
 const inquirer = require("inquirer")
 const simpleGit = require('simple-git');
+const terminalLink = require('terminal-link')
 const fse = require("fs-extra")
 const log = require("@aotu-cli/log")
 const { readFile, writeFile } = require("@aotu-cli/utils")
@@ -13,6 +14,7 @@ const Gitee = require('./Gitee')
 const CLI_HOME_PATH = ".aotu-cli";
 const GIT_ROOT_DIR = ".git"
 const GIT_SERVER_FILE = ".git_server";
+const GIT_TOKEN_FILE = ".git_token";
 const GITHUB = "GitHub"
 const GITEE = "Gitee"
 const GIT_SERVER_TYPES = [{
@@ -24,14 +26,17 @@ const GIT_SERVER_TYPES = [{
 }]
 
 class Git {
-    constructor({ name, version, dir }, { refreshServer = false }) {
+    constructor({ name, version, dir }, { refreshServer = false, refreshToken = false }) {
         this.name = name;
         this.version = version;
         this.dir = dir;
         this.git = simpleGit(dir);
         this.gitServer = null;
         this.homePath = null;
+        this.user = null;
+        this.orgs = null;
         this.refreshServer = refreshServer;
+        this.refreshToken = refreshToken
         this.prepare();
     }
 
@@ -40,6 +45,10 @@ class Git {
         this.checkHomePath()
         // 检查用户远程仓库类型
         await this.checkGitServer()
+        // 获取git远程token
+        await this.checkGitToken()
+        // 获取远程仓库用户和组织信息
+        await this.getUserAndOrgs()
     }
 
     checkHomePath() {
@@ -68,16 +77,48 @@ class Git {
                 choices: GIT_SERVER_TYPES,
                 default: GITHUB,
             })).gitServer
-            console.log("gitServer", gitServer);
             writeFile(gitServerPath, gitServer)
             log.success("git server 写入成功😊 ", `${gitServer}➡️${gitServerPath}`)
         } else {
             log.success("git server 读取成功😊 ", `${gitServer}`)
         }
-        this.gitServer = createGitServer(gitServer)
+        this.gitServer = this.createGitServer(gitServer)
         if (!this.gitServer) {
             throw new Error("GitServer 初始化失败 😭")
         }
+    }
+
+    async checkGitToken() {
+        const tokenPath = this.createPath(GIT_TOKEN_FILE);
+        let token = readFile(tokenPath);
+        if (!token || this.refreshToken) {
+            log.warn(`${this.gitServer.type} token未生成 😭，请先生成 ${this.gitServer.type} token` + terminalLink('链接🔗', this.gitServer.getTokenHelperUrl()));
+            token = (await inquirer.prompt({
+                type: "password",
+                name: "token",
+                message: "请将token复制到这里",
+                default: "",
+            })).token
+            console.log("token", token);
+            writeFile(tokenPath, token);
+            log.success("token 写入成功😊 ", `${token}➡️${tokenPath}`);
+        } else {
+            log.success("token 读取成功😊 ", `${tokenPath}`, token);
+        }
+        this.token = token;
+        this.gitServer.setToken(token);
+    }
+
+    async getUserAndOrgs() {
+        this.user = await this.gitServer.getUser();
+        if (!this.user) {
+            throw new Error("未获取到当前用户信息 😅")
+        }
+        this.orgs = await this.gitServer.getOrg(this.user.login);
+        if (!this.orgs) {
+            throw new Error("未获取到当前用户组织信息 😅")
+        }
+        log.success(this.gitServer.type + "用户和组织信息获取成功 😄 ");
     }
 
     createGitServer(gitServer) {

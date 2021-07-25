@@ -9,7 +9,8 @@ const log = require("@aotu-cli/log");
 class PublishCommand extends Command {
     init() {
         this.options = {
-            refreshServer: this._cmd.refreshServer
+            refreshServer: this._cmd.refreshServer,
+            refreshToken: this._cmd.refreshToken
         }
     }
     exec() {
@@ -33,7 +34,6 @@ class PublishCommand extends Command {
         // 1、检查项目是否是 npm 项目
         const projectPath = process.cwd();
         const pkgPath = path.resolve(projectPath, "package.json");
-        log.verbose("package.json", pkgPath)
         if (!fs.existsSync(pkgPath)) {
             throw new Error("package.json 文件不存在")
         }
