@@ -37,4 +37,4 @@ ssh-keygen -t rsa -C "xx"
 [获取 SSH](https://github.com/settings/keys)
 [获取 Token](https://github.com/settings/tokens)
 
-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
+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

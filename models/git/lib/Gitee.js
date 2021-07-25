@@ -14,16 +14,23 @@ class Gitee extends GitServer {
     }
 
     getUser = () => {
-        return this.request.get("/user")
+        return this.request.get('/user').then(response => {
+            return this.handleResponse(response);
+        });
     }
 
     /**
-     * 获取用户所属组织
-     * @param {*} username 
+     * 获取用户所属组织 
      * @returns 
      */
-    getOrg = (username) => {
-        return this.request.get(`/users/${username}/orgs`)
+    getOrgs = () => {
+        return this.request.get('/user/orgs', {
+            page: 1,
+            per_page: 100,
+            admin: true,
+        }).then(response => {
+            return this.handleResponse(response);
+        });
     }
 
     /**
@@ -62,11 +69,16 @@ class Gitee extends GitServer {
     getRemote = (login, repo) => {
         return `git@gitee.com:${login}/${repo}.git`;
     };
-    getSSHKeyUrl = () => {
+    getSSHKeysUrl = () => {
         return "https://gitee.com/profile/sshkeys";
-    }
-    getTokenUrl = () => {
+    };
+
+    getTokenHelpUrl = () => {
         return "https://gitee.com/personal_access_tokens"
-    }
+    };
+
+    getSSHKeysHelpUrl = () => {
+        return 'https://gitee.com/help/articles/4191';
+    };
 }
 module.exports = Gitee

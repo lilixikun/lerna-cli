@@ -16,11 +16,12 @@ class GitServer {
     getRepo() {
 
     }
-    getSSHKeyUrl() { }
+    getSSHKeysUrl() { }
 
-    getTokenUrl() {
+    getTokenHelpUrl() {
         return "https://sindresorhus.com"
     }
+    getSSHKeysHelpUrl() { }
     isHttpResponse = (response) => {
         return response && response.status && response.statusText &&
             response.headers && response.data && response.config;
