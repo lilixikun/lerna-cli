@@ -76,6 +76,7 @@ class Git {
         this.refreshServer = refreshServer; // 是否强制刷新远程Git类型
         this.refreshToken = refreshToken; // 是否强制刷新远程Gittoken
         this.refreshOwner = refreshOwner; // 强制刷新 owner
+        this.branch = null; //本地开发分支
     }
 
     async prepare() {
@@ -299,8 +300,57 @@ pnpm-debug.log*
 
     async getCorrectVersion() {
         log.notice('获取代码分支');
+        // 1. 获取远程发布分支
         const remoteBranchList = await this.getRemoteBranchList(VERSION_RELEASE);
         console.log(remoteBranchList);
+        let releaseVersion = null;
+        if (remoteBranchList && remoteBranchList.length > 0) {
+            // 获取最近的线上版本
+            releaseVersion = remoteBranchList[0];
+        }
+        log.verbose("线上最新版本号", releaseVersion)
+        // 2. 生成本地开发分支
+        const devVersion = this.version;
+        if (!releaseVersion) {
+            this.branch = `${VERSION_DEVELOP}/${devVersion}`;
+        } else if (semver.gt(this.version, releaseVersion)) {
+            log.info('当前版本大于线上最新版本', `${devVersion} >= ${releaseVersion}`);
+            this.branch = `${VERSION_DEVELOP}/${devVersion}`;
+        } else {
+            log.notice('当前线上版本大于或等于本地版本', `${releaseVersion} >= ${devVersion}`);
+            const incType = (await inquirer.prompt({
+                type: 'list',
+                name: 'incType',
+                message: "自动升级版本，请选择升级版本类型",
+                defaultValue: 'patch',
+                choices: [
+                    {
+                        name: `小版本（${releaseVersion} -> ${semver.inc(releaseVersion, 'patch')}）`,
+                        value: 'patch',
+                    }, {
+                        name: `中版本（${releaseVersion} -> ${semver.inc(releaseVersion, 'minor')}）`,
+                        value: 'minor',
+                    }, {
+                        name: `大版本（${releaseVersion} -> ${semver.inc(releaseVersion, 'major')}）`,
+                        value: 'major',
+                    }
+                ]
+            })).incType
+            const incVersion = semver.inc(releaseVersion, incType);
+            this.branch = `${VERSION_DEVELOP}/${incVersion}`;
+            this.version = incVersion;
+            this.syncVersionToPackageJson();
+        }
+
+        log.verbose("本地开发分支", this.branch);
+    }
+
+    syncVersionToPackageJson() {
+        const pkg = fse.readJsonSync(`${this.dir}/package.json`);
+        if (pkg && pkg.version !== this.version) {
+            pkg.version = this.version;
+            fse.writeJsonSync(`${this.dir}/package.json`, pkg, { spaces: 2 });
+        }
     }
 
     async getRemoteBranchList(type) {
