@@ -4,6 +4,7 @@ const fs = require("fs");
 const userhome = require("userhome");
 const inquirer = require("inquirer");
 const simpleGit = require("simple-git");
+const semver = require("semver");
 const terminalLink = require("terminal-link");
 const fse = require("fs-extra");
 const log = require("@aotu-cli/log");
@@ -23,6 +24,10 @@ const REPO_OWNER_ORG = "org"; // 组织仓库
 
 const GITHUB = "GitHub";
 const GITEE = "Gitee";
+
+const VERSION_RELEASE = 'release';
+const VERSION_DEVELOP = 'dev';
+
 const GIT_SERVER_TYPES = [
     {
         name: "GitHub",
@@ -71,7 +76,6 @@ class Git {
         this.refreshServer = refreshServer; // 是否强制刷新远程Git类型
         this.refreshToken = refreshToken; // 是否强制刷新远程Gittoken
         this.refreshOwner = refreshOwner; // 强制刷新 owner
-        this.prepare();
     }
 
     async prepare() {
@@ -291,6 +295,45 @@ pnpm-debug.log*
         }
         await this.initAndAddRemote();
         await this.initCommit();
+    }
+
+    async getCorrectVersion() {
+        log.notice('获取代码分支');
+        const remoteBranchList = await this.getRemoteBranchList(VERSION_RELEASE);
+        console.log(remoteBranchList);
+    }
+
+    async getRemoteBranchList(type) {
+        // git ls-remote --refs
+        const remoteList = await this.git.listRemote(['--refs']);
+        let reg;
+        // refs/tags/1.0.0
+        if (type === VERSION_RELEASE) {
+            reg = /.+?refs\/tags\/release\/(\d+\.\d+\.\d+)/g;
+        } else {
+            reg = /.+?refs\/heads\/dev\/(\d+\.\d+\.\d+)/g;
+        }
+        return remoteList.split('\n').map(remote => {
+            const match = reg.exec(remote);
+            reg.lastIndex = 0; // 制为0从头开始批评 
+            if (match && semver.valid(match[1])) {
+                return match[1];
+            }
+        }).filter(_ => _).sort((a, b) => {
+            if (semver.lte(b, a)) {
+                if (a === b) return 0;
+                return -1;
+            }
+            return 1;
+        });
+    }
+
+    async commit() {
+        // 生成开发分支
+        await this.getCorrectVersion();
+        // 在开发分支提交代码
+        // 合并远程开发分支
+        // 推送开发分支
     }
 
     getRemote() {

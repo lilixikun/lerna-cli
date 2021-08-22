@@ -14,15 +14,20 @@ class PublishCommand extends Command {
             refreshOwner: this._cmd.refreshOwner
         }
     }
-    exec() {
+    async exec() {
         try {
             const startTime = new Date().getTime();
-            const endTime = new Date().getTime();
-            log.info("本地构建耗时", Math.floor((endTime - startTime) / 1000) + "秒⏰")
             // 1、初始化检查
             this.prepare()
             // 2、Git Flow 自动化
+            const git = new Git(this.projectInfo, this.options);
+            // 自动化提交准备和代码仓库初始化
+            await git.prepare();
+            // 代码自动化提交
+            await git.commit();
             // 3、云构建和云发布
+            const endTime = new Date().getTime();
+            log.info("本地构建耗时", Math.floor((endTime - startTime) / 1000) + "秒⏰")
         } catch (e) {
             log.error(e.message);
             if (process.env.LOG_LEVEL === "verbose") {
@@ -49,8 +54,6 @@ class PublishCommand extends Command {
             version,
             dir: projectPath
         }
-        const git = new Git(this.projectInfo, this.options)
-        git.init()
     }
 }
 

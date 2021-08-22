@@ -32,6 +32,7 @@
     "axios": "^0.21.1",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.2",
+    "semver": "^7.3.5",
     "simple-git": "^2.41.1",
     "terminal-link": "^2.1.1",
     "userhome": "^1.0.0"
