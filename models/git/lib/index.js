@@ -379,11 +379,54 @@ pnpm-debug.log*
     }
 
     async commit() {
-        // 生成开发分支
+        // 1.生成开发分支
         await this.getCorrectVersion();
-        // 在开发分支提交代码
-        // 合并远程开发分支
-        // 推送开发分支
+        // 2.检查 stash区
+        await this.checkStash();
+        // 3.检查代码冲突 (tips:误删除文件可以使用 git checkout -- file 进行还原)
+        await this.checkConflicted();
+        // 4.切换开发分支
+        await this.checkoutBranch(this.branch);
+        // 5.合并y远程master分支和开发分支
+        await this.pullRemoteMasterAndBranch();
+        // 6.将开发分支推送到远程仓库
+        await this.pushRemoteRepo(this.branch);
+    }
+
+    async checkStash() {
+        log.notice('检查 stash 记录');
+        const stashList = await this.git.stashList();
+        if (stashList.all.length > 0) {
+            await this.git.stash(['pop']);
+            log.success('stash pop 成功');
+        }
+    }
+
+    async checkoutBranch() {
+        const localBranchList = await this.git.branchLocal();
+        if (localBranchList.all.indexOf(branch) >= 0) {
+            await this.git.checkout(branch);
+        } else {
+            await this.git.checkoutLocalBranch(branch);
+        }
+        log.success(`分支切换到${branch}`);
+    }
+
+    async pullRemoteMasterAndBranch() {
+        log.notice(`合并 [master] -> [${this.branch}]`);
+        await this.pullRemoteRepo('master');
+        log.success('合并远程 [master] 分支内容成功');
+        await this.checkConflicted();
+        log.notice('检查远程分支');
+        const remoteBranchList = await this.getRemoteBranchList();
+        if (remoteBranchList.indexOf(this.version) >= 0) {
+            log.notice(`合并 [${this.branch}] -> [${this.branch}]`);
+            await this.pullRemoteRepo(this.branch);
+            log.success(`合并远程 [${this.branch}] 分支内容成功`);
+            await this.checkConflicted();
+        } else {
+            log.success(`不存在远程分支 [${this.branch}]`);
+        }
     }
 
     getRemote() {
