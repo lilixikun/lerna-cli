@@ -8,6 +8,7 @@ const semver = require("semver");
 const terminalLink = require("terminal-link");
 const fse = require("fs-extra");
 const log = require("@aotu-cli/log");
+const CloudBuild = require("@aotu-cli/cloudBuild")
 const { readFile, writeFile, oraSpinner } = require("@aotu-cli/utils");
 const GitHub = require("./Github");
 const Gitee = require("./Gitee");
@@ -60,7 +61,7 @@ const GIT_OWNER_TYPE_ONLY = [
 class Git {
     constructor(
         { name, version, dir },
-        { refreshServer = false, refreshToken = false, refreshOwner = false }
+        { refreshServer = false, refreshToken = false, refreshOwner = false, buildCmd = "" }
     ) {
         this.name = name;
         this.version = version;
@@ -77,6 +78,7 @@ class Git {
         this.refreshToken = refreshToken; // 是否强制刷新远程Gittoken
         this.refreshOwner = refreshOwner; // 强制刷新 owner
         this.branch = null; //本地开发分支
+        this.buildCmd = buildCmd; // 构建命令
     }
 
     async prepare() {
@@ -96,6 +98,50 @@ class Git {
         this.checkGitIgnore();
         // 完成本地仓库初始化
         await this.init();
+    }
+
+    async init() {
+        if (this.getRemote()) {
+            return true;
+        }
+        await this.initAndAddRemote();
+        await this.initCommit();
+    }
+
+    async commit() {
+        // 1.生成开发分支
+        await this.getCorrectVersion();
+        // 2.检查 stash区
+        await this.checkStash();
+        // 3.检查代码冲突 (tips:误删除文件可以使用 git checkout -- file 进行还原)
+        await this.checkConflicted();
+        // 4.切换开发分支
+        await this.checkoutBranch(this.branch);
+        // 5.合并远程master分支和开发分支
+        await this.pullRemoteMasterAndBranch();
+        // 6.将开发分支推送到远程仓库
+        await this.pushRemoteRepo(this.branch);
+    }
+
+    async publish() {
+        await this.preparePublish()
+        const buildCmd = '';
+        const cloudBuild = new CloudBuild(this, {
+            buildCmd
+        })
+    }
+
+    preparePublish() {
+        if (this.buildCmd) {
+            const buildArr = this.buildCmd.split(" ")
+            let buildStart = buildArr[0]
+            if (buildStart !== "npm" && buildStart !== "cnpm" && buildStart !== "yarn") {
+                throw new Error("Build 命令非法、必须使用【npm】或【cnpm】或【yarn】")
+            }
+            console.log(buildArr);
+        } else {
+            this.buildCmd = "npm run build"
+        }
     }
 
     checkHomePath() {
@@ -290,14 +336,6 @@ pnpm-debug.log*
         return filePath;
     }
 
-    async init() {
-        if (this.getRemote()) {
-            return true;
-        }
-        await this.initAndAddRemote();
-        await this.initCommit();
-    }
-
     async getCorrectVersion() {
         log.notice('获取代码分支');
         // 1. 获取远程发布分支
@@ -365,7 +403,7 @@ pnpm-debug.log*
         }
         return remoteList.split('\n').map(remote => {
             const match = reg.exec(remote);
-            reg.lastIndex = 0; // 制为0从头开始批评 
+            reg.lastIndex = 0; // 重置为0从头开始匹配
             if (match && semver.valid(match[1])) {
                 return match[1];
             }
@@ -378,21 +416,6 @@ pnpm-debug.log*
         });
     }
 
-    async commit() {
-        // 1.生成开发分支
-        await this.getCorrectVersion();
-        // 2.检查 stash区
-        await this.checkStash();
-        // 3.检查代码冲突 (tips:误删除文件可以使用 git checkout -- file 进行还原)
-        await this.checkConflicted();
-        // 4.切换开发分支
-        await this.checkoutBranch(this.branch);
-        // 5.合并y远程master分支和开发分支
-        await this.pullRemoteMasterAndBranch();
-        // 6.将开发分支推送到远程仓库
-        await this.pushRemoteRepo(this.branch);
-    }
-
     async checkStash() {
         log.notice('检查 stash 记录');
         const stashList = await this.git.stashList();
@@ -402,7 +425,7 @@ pnpm-debug.log*
         }
     }
 
-    async checkoutBranch() {
+    async checkoutBranch(branch) {
         const localBranchList = await this.git.branchLocal();
         if (localBranchList.all.indexOf(branch) >= 0) {
             await this.git.checkout(branch);
@@ -490,6 +513,7 @@ pnpm-debug.log*
             while (!message) {
                 message = (await inquirer.prompt({
                     type: 'text',
+                    name: "message",
                     message: '请输入 commit 信息：',
                     defaultValue: '',
                 })).message;

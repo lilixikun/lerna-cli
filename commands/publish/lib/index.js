@@ -11,7 +11,8 @@ class PublishCommand extends Command {
         this.options = {
             refreshServer: this._cmd.refreshServer,
             refreshToken: this._cmd.refreshToken,
-            refreshOwner: this._cmd.refreshOwner
+            refreshOwner: this._cmd.refreshOwner,
+            buildCmd: this._cmd.buildCmd
         }
     }
     async exec() {
@@ -26,6 +27,7 @@ class PublishCommand extends Command {
             // 代码自动化提交
             await git.commit();
             // 3、云构建和云发布
+            await git.publish()
             const endTime = new Date().getTime();
             log.info("本地构建耗时", Math.floor((endTime - startTime) / 1000) + "秒⏰")
         } catch (e) {

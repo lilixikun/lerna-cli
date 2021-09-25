@@ -1,7 +1,7 @@
 {
-  "name": "@aotu-cli/git",
+  "name": "@aotu-cli/cloudbuild",
   "version": "0.1.1",
-  "description": "git flow 基类",
+  "description": "脚手架云构建",
   "author": "xikun <460373604@qq.com>",
   "homepage": "https://github.com/LiLixikun/lerna-cli#readme",
   "license": "ISC",
@@ -27,15 +27,6 @@
     "url": "https://github.com/LiLixikun/lerna-cli/issues"
   },
   "dependencies": {
-    "@aotu-cli/log": "file:../../utils/log",
-    "@aotu-cli/utils": "file:../../utils/utils",
-    "@aotu-cli/cloudBuild": "file:../../models/cloudBuild",
-    "axios": "^0.21.1",
-    "fs-extra": "^10.0.0",
-    "inquirer": "^8.1.2",
-    "semver": "^7.3.5",
-    "simple-git": "^2.41.1",
-    "terminal-link": "^2.1.1",
-    "userhome": "^1.0.0"
+    "socket.io-client": "^2.0.0"
   }
 }

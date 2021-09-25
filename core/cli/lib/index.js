@@ -126,6 +126,7 @@ function registerCommand() {
     .option("--refreshServer", "强制更新远程Git仓库")
     .option("--refreshToken", "强制更新远程仓库token")
     .option("--refreshOwner", "强制更新远程仓库owner")
+    .option("--buildCmd <buildCmd>", "构建命令")
     .action(exec);
 
   program.command("clear [type]").action(exec);
