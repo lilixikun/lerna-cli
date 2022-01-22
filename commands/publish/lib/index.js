@@ -12,7 +12,8 @@ class PublishCommand extends Command {
             refreshServer: this._cmd.refreshServer,
             refreshToken: this._cmd.refreshToken,
             refreshOwner: this._cmd.refreshOwner,
-            buildCmd: this._cmd.buildCmd
+            buildCmd: this._cmd.buildCmd,
+            prod: this._cmd.prod
         }
     }
     async exec() {

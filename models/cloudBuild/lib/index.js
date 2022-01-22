@@ -30,6 +30,12 @@ class Cloudbuild {
         this.timer = setTimeout(fn, timeout);
     }
 
+    prepare() {
+        // 获取OSS文件
+        // 判断OSS文件是否存在
+        // 如果存在切处于正式发布，则询问用户是否进行覆盖发布
+    }
+
     init() {
         return new Promise((resolve, reject) => {
             const socket = io(WS_SERVER, {
