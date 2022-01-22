@@ -121,7 +121,14 @@ function registerCommand() {
     .option("-f, --force", "是否强制初始化项目")
     .action(exec);
 
-  program.command("publish").action(exec);
+  program
+    .command("publish")
+    .option("--refreshServer", "强制更新远程Git仓库")
+    .option("--refreshToken", "强制更新远程仓库token")
+    .option("--refreshOwner", "强制更新远程仓库owner")
+    .option("--buildCmd <buildCmd>", "构建命令")
+    .option("--prod", "是否正式发布")
+    .action(exec);
 
   program.command("clear [type]").action(exec);
 
