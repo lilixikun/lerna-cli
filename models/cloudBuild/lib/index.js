@@ -6,7 +6,8 @@ const WS_SERVER = "ws://127.0.0.1:7001"
 const TIME_OUT = 5 * 60
 const DISCONNECT_TIME_OUT = 5 * 1000
 
-const FAILED_CODE = ["prepare failed", "download failed", "install failed"]
+const FAILED_CODE = ["prepare failed", "download failed", "install failed", "build failed",
+    "pre-publish failed", "publish failed"]
 
 function parseMsg(msg) {
     const action = msg.data.action
@@ -21,6 +22,7 @@ class Cloudbuild {
     constructor(git, options) {
         this.git = git
         this.buildCmd = options.buildCmd
+        this.prod = options.prod
         this.timeout = TIME_OUT
     }
 
@@ -44,7 +46,8 @@ class Cloudbuild {
                     name: this.git.name,
                     branch: this.git.branch,
                     version: this.git.version,
-                    buildCmd: this.buildCmd
+                    buildCmd: this.buildCmd,
+                    prod: this.prod
                 }
             });
             this.socket = socket;
